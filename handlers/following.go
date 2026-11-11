@@ -102,3 +102,13 @@ var FollowerList = func(ctx *gin.Context) {
 
 	utils.ReturnJson(response, ctx)
 }
+
+// FollowingUpdatesList 关注动态（谁推荐了哪一期）：真实抓包是 POST body {}（不是 GET）。
+var FollowingUpdatesList = func(ctx *gin.Context) {
+	proxyNotification(ctx, "/v1/personal-update/list-following-updates")
+}
+
+// SubscriptionOftenPlayed 常听节目
+var SubscriptionOftenPlayed = func(ctx *gin.Context) {
+	proxyNotification(ctx, "/v1/subscription/list-often-played")
+}

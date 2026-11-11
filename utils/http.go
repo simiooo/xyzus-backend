@@ -5,11 +5,37 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
+	"sync"
 	"time"
 )
 
 var client = &http.Client{
 	Timeout: time.Second * 15,
+}
+
+var (
+	extraHeadersOnce sync.Once
+	extraHeaders     map[string]string
+)
+
+// 本地联调覆盖：上游对「token + 设备头」是绑定校验的，而 xyz 默认的 iOS 2.57.1
+// 请求头模板与新版 App token 不匹配。设置 XYZ_EXTRA_HEADERS（JSON map）后，
+// 这里会把其中的请求头覆盖到所有上游请求上，便于用真实账号 token 联调。
+// 未设置该环境变量时完全不生效，生产 Docker 构建不受影响。
+func loadExtraHeaders() map[string]string {
+	extraHeadersOnce.Do(func() {
+		raw := os.Getenv("XYZ_EXTRA_HEADERS")
+		if raw == "" {
+			return
+		}
+		var parsed map[string]string
+		if err := json.Unmarshal([]byte(raw), &parsed); err == nil {
+			extraHeaders = parsed
+		}
+	})
+	return extraHeaders
 }
 
 func Request(url, method string, body map[string]any, headers map[string]string) (*http.Response, int, error) {
@@ -27,6 +53,15 @@ func Request(url, method string, body map[string]any, headers map[string]string)
 		for key, value := range headers {
 			req.Header.Set(key, value)
 		}
+	}
+
+	for key, value := range loadExtraHeaders() {
+		// local-time 必须跟着每次请求走：上游会用这个头校验/排序播放进度，
+		// 固定的旧时间会让 playback-progress/update 返回 200 但静默丢弃写入。
+		if strings.EqualFold(key, "local-time") {
+			value = time.Now().Format("2006-01-02T15:04:05.000-0700")
+		}
+		req.Header.Set(key, value)
 	}
 
 	var resp *http.Response

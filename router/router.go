@@ -46,6 +46,19 @@ func RegisterRouters(engine *gin.Engine) {
 	engine.POST("/comment_like_update", utils.CheckAccessToken(), handlers.CommentLikeUpdate)                             // 点赞/取消点赞评论
 	engine.POST("/comment_create", utils.CheckAccessToken(), handlers.CommentCreate)                                      // 创建评论
 	engine.POST("/comment_remove", utils.CheckAccessToken(), handlers.CommentRemove)                                      // 删除评论
+	engine.POST("/comment_list_thread_v2", utils.CheckAccessToken(), handlers.CommentListThreadV2)                         // 评论回复 v2
+	engine.POST("/comment_list_mine", utils.CheckAccessToken(), handlers.CommentListMine)                                 // 我的评论
+	engine.POST("/comment_list_timestamp_primary", utils.CheckAccessToken(), handlers.CommentListTimestampPrimary)        // 时点评论
+	engine.POST("/comment_get", utils.CheckAccessToken(), handlers.CommentGet)                                            // 按 id 取评论
+	engine.POST("/ai_summary_episode_retrieve_brief", utils.CheckAccessToken(), handlers.AISummaryEpisodeRetrieveBrief)  // 单集 AI 摘要
+	engine.POST("/episode_transcript_get", utils.CheckAccessToken(), handlers.EpisodeTranscriptGet)                       // 单集文字稿
+	engine.POST("/episode_transcript_content", utils.CheckAccessToken(), handlers.EpisodeTranscriptContent)               // 单集文字稿正文（CDN 代理）
+	engine.POST("/playback_progress_list", utils.CheckAccessToken(), handlers.PlaybackProgressList)                       // 批量取播放进度（跨端续听）
+	engine.POST("/playback_progress_update", utils.CheckAccessToken(), handlers.PlaybackProgressUpdate)                   // 上报播放进度（多端合并）
+	engine.POST("/episode_played_create", utils.CheckAccessToken(), handlers.EpisodePlayedCreate)                         // 记录开始收听
+	engine.POST("/episode_played_list_for_cache", utils.CheckAccessToken(), handlers.EpisodePlayedListForCache)           // 最近收听增量同步（版本游标）
+	engine.POST("/following_updates_list", utils.CheckAccessToken(), handlers.FollowingUpdatesList)                       // 关注动态
+	engine.POST("/subscription_often_played", utils.CheckAccessToken(), handlers.SubscriptionOftenPlayed)                 // 常听节目
 	engine.POST("/discovery", utils.CheckAccessToken(), handlers.Discovery)                                               // 首页榜单、精选节目、推荐等
 	engine.POST("/editor_pick_list_history", utils.CheckAccessToken(), handlers.EditorPickListHistory)                    // 编辑精选-往日精选历史
 	engine.POST("/pilot_discovery_list", utils.CheckAccessToken(), handlers.PilotDiscoveryList)                           // 新节目广场
@@ -63,6 +76,15 @@ func RegisterRouters(engine *gin.Engine) {
 	engine.POST("/episode_played_history_list", utils.CheckAccessToken(), handlers.EpisodePlayedHistoryList)              // 收听历史
 	engine.POST("/episode_played_history_list_update", utils.CheckAccessToken(), handlers.UpdateEpisodePlayedHistoryList) // 更新收听历史
 	engine.POST("/unread_count", utils.CheckAccessToken(), handlers.UnreadCount)                                          // 未读消息
+	engine.POST("/notice_list", utils.CheckAccessToken(), handlers.NoticeList)                                            // 互动通知列表
+	engine.POST("/inbox_remove", utils.CheckAccessToken(), handlers.InboxRemove)                                          // 删除收件箱消息
+	engine.POST("/system_notice_list", utils.CheckAccessToken(), handlers.SystemNoticeList)                               // 系统通知列表
+	engine.POST("/system_notice_unread", utils.CheckAccessToken(), handlers.SystemNoticeUnread)                           // 系统通知未读数
+	engine.POST("/inbox_list_v2", utils.CheckAccessToken(), handlers.InboxListV2)                                         // 收件箱列表 v2
+	engine.POST("/tab_featured_list", utils.CheckAccessToken(), handlers.TabFeaturedList)                                 // 首页「精选」tab 列表
+	engine.POST("/tab_discovery_list", utils.CheckAccessToken(), handlers.TabDiscoveryList)                               // 首页「发现」tab 列表
+	engine.POST("/tab_category_list", utils.CheckAccessToken(), handlers.TabCategoryList)                                 // 首页「分类」tab 列表
+	engine.POST("/related_episode_list", utils.CheckAccessToken(), handlers.RelatedEpisodeList)                           // 相关单集列表
 	engine.POST("/user_stats", utils.CheckAccessToken(), handlers.GetUserStats)                                           // 用户统计数据
 	engine.POST("/get_profile", utils.CheckAccessToken(), handlers.GetProfileByUid)                                       // 根据 uid 查询用户信息
 	engine.POST("/mileage_get", utils.CheckAccessToken(), handlers.GetMileage)                                            // 获取收听数据概览
