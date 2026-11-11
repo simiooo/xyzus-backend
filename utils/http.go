@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
 	"time"
 )
@@ -56,13 +55,13 @@ func Request(url, method string, body map[string]any, headers map[string]string)
 	}
 
 	for key, value := range loadExtraHeaders() {
-		// local-time 必须跟着每次请求走：上游会用这个头校验/排序播放进度，
-		// 固定的旧时间会让 playback-progress/update 返回 200 但静默丢弃写入。
-		if strings.EqualFold(key, "local-time") {
-			value = time.Now().Format("2006-01-02T15:04:05.000-0700")
-		}
 		req.Header.Set(key, value)
 	}
+
+	// local-time 每次请求都用当前时间，格式对齐 App（毫秒 + 无冒号时区，如 2026-11-11T21:57:37.943+0800）。
+	// 上游用该头校验/排序播放进度写入；notificationHeaders 默认的 ...Z07:00（无毫秒、时区带冒号）
+	// 会让 playback-progress/update 返回 200 但静默丢弃。统一在此覆盖，生产无需任何环境变量。
+	req.Header.Set("Local-Time", time.Now().Format("2006-01-02T15:04:05.000-0700"))
 
 	var resp *http.Response
 	var retryErr error
