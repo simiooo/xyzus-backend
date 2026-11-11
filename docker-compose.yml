@@ -1,7 +1,11 @@
-version: '3'
-
 services:
-  xyz:
-    image: ultrazg/xyz:v1.4.2
+  # 从本仓库补丁源码构建后端（含 22 条代理端点 + local-time 修复）。
+  # 面向用户的完整部署（前端 + 后端）入口在 xyzus-web 的 compose，见 README。
+  backend:
+    build: .
     ports:
-      - "8080:8080"
+      - "23020:23020"
+    environment:
+      # 与 App 一致用东八区：utils/http.go 每请求动态生成 local-time（+0800）
+      TZ: Asia/Shanghai
+    restart: unless-stopped

@@ -1,0 +1,11 @@
+.git
+.idea
+.vscode
+build
+.DS_Store
+*.exe
+*.exe~
+xyz
+logo.png
+README.md
+CHANGELOG.md
