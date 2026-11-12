@@ -2,3 +2,6 @@
 .vscode
 build
 .DS_Store
+*.exe
+*.exe~
+/xyz
